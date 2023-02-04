@@ -1,5 +1,7 @@
 import './App.css';
 import { useState } from 'react';
+import { TradeInfo, GenerateRowProps, TickerProps, Ticker24Props } from './types';
+import Error from './Errors';
 
 import Binance from 'node-binance-api';
 const binance = new Binance().options({
@@ -7,29 +9,13 @@ const binance = new Binance().options({
   APISECRET: 'QOxTCcskDhAlDqV1LeRl0hYFYzbpIdULlvg197l7WrcinpeKMMZhpefc09ahx0TE'
 });
 
-type tradeInfo = {
-  [key: string]: string | number 
-}
-
-interface GenerateRowProps {
-  trades: Array<tradeInfo>;
-}
-
-interface TickerProps {
-  ticker: {[key: string]: string};
-}
-
-interface Ticker24Props {
-  ticker24: {[key: string]: string | number };
-}
-
 function App() {
   const [symbol, setSymbol] = useState('');
   const [inputError, setInputError] = useState('');
+  const [apiError, setApiError] = useState('');
   const [trades, setTrades] = useState([]);
   const [ticker, setTicker] = useState({});
   const [ticker24, setTicker24] = useState({});
-  const [apiError, setApiError] = useState('');
   const [sortInfo, setSortInfo] = useState({
     key: '',
     direction: '',
@@ -40,24 +26,7 @@ function App() {
     } as {[key: string]: string}
   });
 
-  function InputError (): any {
-    if(inputError.length) {
-      return (
-        <h4>{inputError}</h4>
-      );
-    }
-  }
-
-  function ApiError (): any {
-    if(apiError.length) {
-      return (
-        <h4>{apiError}</h4>
-      );
-    }
-  }
-
   function Ticker ({ ticker }: TickerProps): any {
-    console.log(ticker[symbol]);
     if (ticker && ticker[symbol]) {
       return(
         <div className="ticker-div">
@@ -100,7 +69,7 @@ function App() {
         return 0;
       });
     }
-    return (sortedTrades.map((row: tradeInfo) => {
+    return (sortedTrades.map((row: TradeInfo) => {
       return(
         <tr>
           <td>{row.time}</td>
@@ -142,12 +111,10 @@ function App() {
       setInputError('Currency Pair is too short!');
 
     const tickerRes = await binance.prices(symbol);
-    console.log(tickerRes);
     if (Object.keys(tickerRes).length)
       setTicker(tickerRes);
 
     const ticker24Res = await binance.prevDay(symbol);
-    console.log(ticker24Res);
     if (Object.keys(ticker24Res).length)
       setTicker24(ticker24Res);
       
@@ -155,7 +122,6 @@ function App() {
     if (Object.keys(tradesRes).length) {
       const lastTen = tradesRes.slice(0,10);
       setTrades(lastTen);
-      console.log(lastTen);
     }
     else 
       setApiError('An error occured when fetching the data :(');
@@ -170,8 +136,8 @@ function App() {
         <form>
           <input style={{fontSize: 20}} placeholder='e.g BNBBTC' required />
           <button className='search-button' onClick={getMarketData}>Search</button>
-          <ApiError/>
-          <InputError/>
+          <Error error={apiError}/>
+          <Error error={inputError}/>
         </form>
           <div className='market-data'>
             <Ticker ticker={ticker}/>
