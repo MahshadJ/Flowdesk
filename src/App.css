@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  font-family: 'Quicksand', sans-serif;
 }
 
 .App-logo {
@@ -14,7 +15,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: black;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -28,11 +29,15 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.font-link {
+  font-family: 'Quicksand', sans-serif;
+}
+
+button {
+  margin-left: 10px;
+  border-radius: 2px; 
+  font-size: 22px;
+  font-family: 'Quicksand';
+  background-color: #6B00E1;
+  border: none;
 }
