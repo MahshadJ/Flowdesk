@@ -8,10 +8,8 @@ const binance = new Binance().options({
 });
 
 type tradeInfo = {
-  time: number;
-  price: string;
-  qty: string;
-};
+  [key: string]: string | number 
+}
 
 interface GenerateRowProps {
   trades: Array<tradeInfo>;
@@ -25,19 +23,6 @@ interface Ticker24Props {
   ticker24: {[key: string]: string | number };
 }
 
-function GenerateRows ({trades}: GenerateRowProps): any {
-  return (trades.map((row: tradeInfo) => {
-    console.log(row.price);
-    return(
-      <tr>
-        <td>{row.time}</td>
-        <td>{row.price}</td>
-        <td>{row.qty}</td>
-      </tr>
-    );
-  }));
-};
-
 function App() {
   const [symbol, setSymbol] = useState('');
   const [inputError, setInputError] = useState('');
@@ -45,6 +30,15 @@ function App() {
   const [ticker, setTicker] = useState({});
   const [ticker24, setTicker24] = useState({});
   const [apiError, setApiError] = useState('');
+  const [sortInfo, setSortInfo] = useState({
+    key: '',
+    direction: '',
+    arrows: {
+      time: 'v',
+      price: 'v',
+      qty: 'v',
+    } as {[key: string]: string}
+  });
 
   function InputError (): any {
     if(inputError.length) {
@@ -84,15 +78,48 @@ function App() {
     }
   }
 
+  const changeSortInfo = (key: string) => {
+    let direction = 'asc';
+    if (sortInfo.key === key && sortInfo.direction === 'asc') {
+      direction = 'desc';
+    }
+    sortInfo.arrows[key] = direction === 'asc' ? '^' : 'v';
+    setSortInfo({ key, direction, arrows: sortInfo.arrows });
+  }
+
+  function GenerateRows ({trades}: GenerateRowProps): any {
+    let sortedTrades = [...trades];
+    if (sortInfo.key !== '') {
+      sortedTrades.sort((a, b) => {
+        if (a[sortInfo.key] < b[sortInfo.key]) {
+          return sortInfo.direction === 'asc' ? -1 : 1;
+        }
+        if (a[sortInfo.key] > b[sortInfo.key]) {
+          return sortInfo.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return (sortedTrades.map((row: tradeInfo) => {
+      return(
+        <tr>
+          <td>{row.time}</td>
+          <td>{row.price}</td>
+          <td>{row.qty}</td>
+        </tr>
+      );
+    }));
+  };
+
   function SearchResultTable ({trades}: GenerateRowProps): any {
     if (trades.length) {
       return(
         <table>
           <thead>
             <tr>
-              <th>Time</th>
-              <th>Price</th>
-              <th>Quantity</th>
+              <th><button className='header' onClick={() => changeSortInfo('time')}>Time {sortInfo.arrows['time']}</button></th>
+              <th><button className='header' onClick={() => changeSortInfo('price')}>Price {sortInfo.arrows['price']}</button></th>
+              <th><button className='header' onClick={() => changeSortInfo('qty')}>Quantity {sortInfo.arrows['qty']}</button></th>
             </tr>
           </thead>
           <tbody>

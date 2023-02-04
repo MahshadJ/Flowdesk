@@ -38,6 +38,14 @@ button {
   border: none;
 }
 
+button.header {
+  width: 90%;
+  border: solid 1px white;
+  border-radius: 3px;
+  background-color: transparent;
+  color: white;
+}
+
 td {
   word-wrap: break-word;
   padding: 5px;
