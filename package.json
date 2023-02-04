@@ -17,7 +17,6 @@
     "native-dns": "^0.7.0",
     "net": "^1.0.2",
     "node-binance-api": "^0.13.1",
-    "node-polyfill-webpack-plugin": "^2.0.1",
     "path-browserify": "^1.0.1",
     "react": "^18.2.0",
     "react-app-rewired": "^2.2.1",
@@ -26,8 +25,7 @@
     "tls": "^0.0.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
-    "webpack": "^4.44.2",
-    "xmlhttprequest": "^1.8.0"
+    "webpack": "^4.44.2"
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",
@@ -54,6 +52,8 @@
     ]
   },
   "devDependencies": {
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
@@ -71,5 +71,5 @@
     "path": false,
     "os": false
   },
-  "proxy":"http://localhost:3000"
+  "proxy": "http://localhost:3000"
 }
