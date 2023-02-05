@@ -1,6 +1,7 @@
 import './App.css';
 import { useState } from 'react';
-import { TradeInfo, GenerateRowProps, TickerProps, Ticker24Props } from './types';
+import { GenerateRowProps } from './types';
+import { GenerateRows, Ticker, Ticker24 } from './helpers';
 import Error from './Errors';
 
 import Binance from 'node-binance-api';
@@ -26,27 +27,6 @@ function App() {
     } as {[key: string]: string}
   });
 
-  function Ticker ({ ticker }: TickerProps): any {
-    if (ticker && ticker[symbol]) {
-      return(
-        <div className="ticker-div">
-          <h6>The {symbol} ticker price is: {ticker[symbol]}</h6>
-        </div>
-      );
-    }
-  }
-
-  function Ticker24 ({ ticker24 }: Ticker24Props): any {
-    if (ticker24) {
-      return(
-        Object.keys(ticker24).map((key) => {
-          if (key !== 'symbol')
-            return <h6 className="ticker24-h6">{key}: {ticker24[key]}</h6>
-        })
-      );
-    }
-  }
-
   const changeSortInfo = (key: string) => {
     let direction = 'asc';
     if (sortInfo.key === key && sortInfo.direction === 'asc') {
@@ -56,31 +36,7 @@ function App() {
     setSortInfo({ key, direction, arrows: sortInfo.arrows });
   }
 
-  function GenerateRows ({trades}: GenerateRowProps): any {
-    let sortedTrades = [...trades];
-    if (sortInfo.key !== '') {
-      sortedTrades.sort((a, b) => {
-        if (a[sortInfo.key] < b[sortInfo.key]) {
-          return sortInfo.direction === 'asc' ? -1 : 1;
-        }
-        if (a[sortInfo.key] > b[sortInfo.key]) {
-          return sortInfo.direction === 'asc' ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return (sortedTrades.map((row: TradeInfo) => {
-      return(
-        <tr>
-          <td>{row.time}</td>
-          <td>{row.price}</td>
-          <td>{row.qty}</td>
-        </tr>
-      );
-    }));
-  };
-
-  function SearchResultTable ({trades}: GenerateRowProps): any {
+  function SearchResultTable ({trades, sortInfo}: GenerateRowProps): any {
     if (trades.length) {
       return(
         <table>
@@ -92,7 +48,7 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            <GenerateRows trades={trades}/>
+            <GenerateRows trades={trades} sortInfo={sortInfo}/>
           </tbody>
         </table>
       );
@@ -140,11 +96,11 @@ function App() {
           <Error error={inputError}/>
         </form>
           <div className='market-data'>
-            <Ticker ticker={ticker}/>
+            <Ticker ticker={ticker} symbol={symbol}/>
             <div className="ticker24-div">
               <Ticker24 ticker24={ticker24}/>
             </div>
-            <SearchResultTable trades={trades}/>
+            <SearchResultTable trades={trades} sortInfo={sortInfo}/>
           </div>
         </header>
     </div>
